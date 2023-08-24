@@ -1,20 +1,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdbool.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
+/**
+ * main : simple shell
+ *
+ * Return : Always 0
+ */
 
-
-
-int main(int ac, char **av, char **env)
+int main(int argc, char **argv, char **env)
 {
 	char *line = NULL;
 	size_t line_size = 0;
 	ssize_t read;
 	char *nwline = "$ ";
 	pid_t child_pid;
+	int status;
+	bool one_use = false;
 
-	while (1)
+	while (1 && !one_use)
 	{
+
+		/* check if the arg is from pipe or not */
+		if (isatty(STDIN_FILENO) == 0)
+			one_use = true;
+
 		/* print $ sign to the terminal */
 		write(STDOUT_FILENO, nwline, 2);
 
@@ -24,7 +38,7 @@ int main(int ac, char **av, char **env)
 		{
 			perror("Error in getline");
 			free(line);
-			exit(EXIT_FAILURE);
+			return (1);
 		}
 
 		if (line[read - 1] == '\n')
@@ -32,8 +46,39 @@ int main(int ac, char **av, char **env)
 
 		/* creating a child process to execute the command */
 		child_pid = fork();
+		if (child_pid == -1)
+		{
+			perror("Error: fork");
+			return (1);
+		}
+		/* child process to execute the commande */
+		if (child_pid == 0)
+		{
+			_fnexecve(line, env);
+		}
 
+		if (waitpid(child_pid, &status, 0) == -1)
+		{
+			perror("Error waiting for the child");
+			return (1);
+		}
 	}
 
 	free(line);
+	return (0);
+}
+
+int _fnexecve(char *args, char **envp)
+{
+	char **argv;
+
+	argv = strtok(args, " ");
+
+	if (execve(argv[0], argv, envp) == -1)
+	{
+		perror("Error execve");
+		return (1);
+	}
+
+	return (0);
 }
