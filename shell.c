@@ -6,6 +6,13 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+
+
+/* execve function */
+
+int _fnexecve(char **, char **);
+
+
 /**
  * main : simple shell
  *
@@ -21,6 +28,10 @@ int main(int argc, char **argv, char **env)
 	pid_t child_pid;
 	int status;
 	bool one_use = false;
+
+
+	if (argc > 1 && argv[1] != NULL)
+		return(1);
 
 	while (1 && !one_use)
 	{
@@ -54,7 +65,7 @@ int main(int argc, char **argv, char **env)
 		/* child process to execute the commande */
 		if (child_pid == 0)
 		{
-			_fnexecve(line, env);
+			_fnexecve(&line, env);
 		}
 
 		if (waitpid(child_pid, &status, 0) == -1)
@@ -68,13 +79,15 @@ int main(int argc, char **argv, char **env)
 	return (0);
 }
 
-int _fnexecve(char *args, char **envp)
+/* call execve function */
+
+int _fnexecve(char **args, char **envp)
 {
-	char **argv;
+	/*char *argv;
 
-	argv = strtok(args, " ");
+	argv = strtok(args, " ");*/
 
-	if (execve(argv[0], argv, envp) == -1)
+	if (execve(args[0], args, envp) == -1)
 	{
 		perror("Error execve");
 		return (1);
