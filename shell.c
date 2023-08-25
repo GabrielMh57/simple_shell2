@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include "path.h"
 
 #define MAX_TOKENS 64
 
@@ -53,6 +54,7 @@ int main(int argc, char *argv[], char *envp[])
 	int token_count = 0;
 	char *token = NULL;
 	int count_arg = 0;
+	char *path = "/bin:/usr/bin";
 
 	while (argv[0][count_arg] != '\0')
 		count_arg++;
@@ -92,6 +94,28 @@ int main(int argc, char *argv[], char *envp[])
 		if (line[read - 1] == '\n')
 			line[read - 1] = '\0';
 
+		/* Tokenize the line using strtok */
+		token = strtok(line, " ");
+		while (token != NULL && token_count < MAX_TOKENS - 1)
+		{
+			tokens[token_count] = token;
+			token_count++;
+			token = strtok(NULL, " ");
+		}
+
+
+		tokens[token_count] = NULL;
+
+		/* check if file do not exists to check path*/
+		if (!fileExists(tokens[0]))
+		{
+			char *executable = findExecutable(tokens[0], path);
+			if (executable == NULL) {
+				write(STDOUT_FILENO, argv[0], count_arg);
+				perror(" ");
+				continue;
+			}
+		}
 
 		/* creating a child process to execute the command */
 		child_pid = fork();
@@ -103,17 +127,6 @@ int main(int argc, char *argv[], char *envp[])
 		/* child process to execute the commande */
 		if (child_pid == 0)
 		{
-			/* Tokenize the line using strtok */
-			token = strtok(line, " ");
-			while (token != NULL && token_count < MAX_TOKENS - 1)
-			{
-				tokens[token_count] = token;
-				token_count++;
-				token = strtok(NULL, " ");
-			}
-
-
-			tokens[token_count] = NULL;
 
 			if (fileExists(tokens[0]))
 			{
