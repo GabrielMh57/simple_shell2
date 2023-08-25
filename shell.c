@@ -59,19 +59,19 @@ int main(int argc, char *argv[], char *envp[])
 			write(STDOUT_FILENO, nwline, 8);
 
 		/* read data from the std input */
-		if ((read = getline(&line, &line_size, stdin)) == -1)
+		read = getline(&line, &line_size, stdin);
+		if (read == -1)
 		{
 			if (read == EOF)
 				break;
-			else
-			{
-				perror("Error in getline");
-				free(line);
-			}
+
+			perror("Error in getline");
+			free(line);
 			return (1);
 		}
 
-		if (read == 1 && line[0] == '\n') {
+		if (read == 1 && line[0] == '\n')
+		{
 			/* Empty line, prompt again */
 			write(STDOUT_FILENO, "enter cmd\n", 10);
 			continue;
@@ -111,7 +111,7 @@ int main(int argc, char *argv[], char *envp[])
 			{
 				write(STDOUT_FILENO, argv[0], count_arg);
 				perror(" ");
-				exit (1);
+				exit(1);
 			}
 		}
 
@@ -120,7 +120,6 @@ int main(int argc, char *argv[], char *envp[])
 			perror("Error waiting for the child");
 		}
 	}
-	
 
 	free(line);
 	return (0);
