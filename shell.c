@@ -6,11 +6,11 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-
+#define MAX_TOKENS 64
 
 /* execve function */
 
-int _fnexecve(char **, char **);
+int _fnexecve(char **);
 
 
 /**
@@ -19,7 +19,7 @@ int _fnexecve(char **, char **);
  * Return : Always 0
  */
 
-int main(int argc, char **argv, char **env)
+int main(void)
 {
 	char *line = NULL;
 	size_t line_size = 0;
@@ -28,10 +28,9 @@ int main(int argc, char **argv, char **env)
 	pid_t child_pid;
 	int status;
 	bool one_use = false;
-
-
-	if (argc > 1 && argv[1] != NULL)
-		return(1);
+	char *tokens[MAX_TOKENS];
+	int token_count = 0;
+	char *token = NULL; 
 
 	while (1 && !one_use)
 	{
@@ -55,6 +54,7 @@ int main(int argc, char **argv, char **env)
 		if (line[read - 1] == '\n')
 			line[read - 1] = '\0';
 
+
 		/* creating a child process to execute the command */
 		child_pid = fork();
 		if (child_pid == -1)
@@ -65,7 +65,18 @@ int main(int argc, char **argv, char **env)
 		/* child process to execute the commande */
 		if (child_pid == 0)
 		{
-			_fnexecve(&line, env);
+			/* Tokenize the line using strtok */
+			token = strtok(line, " ");
+                	while (token != NULL && token_count < MAX_TOKENS - 1) {
+                        	tokens[token_count] = token;
+                        	token_count++;
+                        	token = strtok(NULL, " ");
+                	}
+
+
+                	tokens[token_count] = NULL;
+		
+			_fnexecve(tokens);	
 		}
 
 		if (waitpid(child_pid, &status, 0) == -1)
@@ -81,13 +92,10 @@ int main(int argc, char **argv, char **env)
 
 /* call execve function */
 
-int _fnexecve(char **args, char **envp)
+int _fnexecve(char **tokens)
 {
-	/*char *argv;
 
-	argv = strtok(args, " ");*/
-
-	if (execve(args[0], args, envp) == -1)
+	if (execve(tokens[0], tokens, NULL) == -1)
 	{
 		perror("Error execve");
 		return (1);
