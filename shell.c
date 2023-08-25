@@ -49,6 +49,8 @@ int main(int argc, char *argv[], char *envp[])
 	{
 		if (argc > 3)
 			return (1);
+
+
 		/* check if the arg is from pipe or not */
 		if (isatty(STDIN_FILENO) == 0)
 			one_use = true;
@@ -59,12 +61,21 @@ int main(int argc, char *argv[], char *envp[])
 		/* read data from the std input */
 		if ((read = getline(&line, &line_size, stdin)) == -1)
 		{
-
-			perror("Error in getline");
-			free(line);
-
+			if (read == EOF)
+				break;
+			else
+			{
+				perror("Error in getline");
+				free(line);
+			}
+			return (1);
 		}
 
+		if (read == 1 && line[0] == '\n') {
+			/* Empty line, prompt again */
+			write(STDOUT_FILENO, "enter cmd\n", 10);
+			continue;
+		}
 
 		if (line[read - 1] == '\n')
 			line[read - 1] = '\0';
