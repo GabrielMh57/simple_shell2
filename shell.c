@@ -3,8 +3,10 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <string.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 
 #define MAX_TOKENS 64
 
@@ -12,6 +14,11 @@
 
 int _fnexecve(char **);
 
+/* check file */
+int fileExists(const char *filename) {
+	struct stat buffer;
+	return (stat(filename, &buffer) == 0);
+}
 
 /**
  * main : simple shell
@@ -30,7 +37,7 @@ int main(void)
 	bool one_use = false;
 	char *tokens[MAX_TOKENS];
 	int token_count = 0;
-	char *token = NULL; 
+	char *token = NULL;
 
 	while (1 && !one_use)
 	{
@@ -38,9 +45,9 @@ int main(void)
 		/* check if the arg is from pipe or not */
 		if (isatty(STDIN_FILENO) == 0)
 			one_use = true;
-
-		/* print $ sign to the terminal */
-		write(STDOUT_FILENO, nwline, 2);
+		else
+			/* print $ sign to the terminal */
+			write(STDOUT_FILENO, nwline, 2);
 
 		/* read data from the std input */
 		read = getline(&line, &line_size, stdin);
@@ -67,19 +74,28 @@ int main(void)
 		{
 			/* Tokenize the line using strtok */
 			token = strtok(line, " ");
-                	while (token != NULL && token_count < MAX_TOKENS - 1) {
-                        	tokens[token_count] = token;
-                        	token_count++;
-                        	token = strtok(NULL, " ");
-                	}
+			while (token != NULL && token_count < MAX_TOKENS - 1)
+			{
+				tokens[token_count] = token;
+				token_count++;
+				token = strtok(NULL, " ");
+			}
 
 
-                	tokens[token_count] = NULL;
-		
-			_fnexecve(tokens);	
+			tokens[token_count] = NULL;
+
+			if (fileExists(tokens[0]))
+			{
+				_fnexecve(tokens);
+			}
+			else
+			{
+				perror("");
+				return (1);
+			}
 		}
 
-		if (waitpid(child_pid, &status, 0) == -1)
+		if (waitpid(child_pid, &status, 0) < 0 && errno != ECHILD)
 		{
 			perror("Error waiting for the child");
 			return (1);
