@@ -115,6 +115,8 @@ int main(int argc, char *argv[], char *envp[])
 				perror(" ");
 				continue;
 			}
+		
+			tokens[0] = executable;
 		}
 
 		/* creating a child process to execute the command */
