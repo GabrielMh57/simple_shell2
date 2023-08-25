@@ -12,7 +12,7 @@
 
 /* execve function */
 
-int _fnexecve(char **);
+int _fnexecve(char **, char **);
 
 /* check file */
 int fileExists(const char *filename) {
@@ -26,28 +26,33 @@ int fileExists(const char *filename) {
  * Return : Always 0
  */
 
-int main(void)
+int main(int argc, char *argv[], char *envp[])
 {
 	char *line = NULL;
 	size_t line_size = 0;
 	ssize_t read;
-	char *nwline = "$ ";
+	char *nwline = "#shell$ ";
 	pid_t child_pid;
 	int status;
 	bool one_use = false;
 	char *tokens[MAX_TOKENS];
 	int token_count = 0;
 	char *token = NULL;
+	int count_arg = 0;
+
+	while (argv[0][count_arg] != '\0')
+		count_arg++;
 
 	while (1 && !one_use)
 	{
-
+		if (argc > 3)
+			return (1);
 		/* check if the arg is from pipe or not */
 		if (isatty(STDIN_FILENO) == 0)
 			one_use = true;
 		else
 			/* print $ sign to the terminal */
-			write(STDOUT_FILENO, nwline, 2);
+			write(STDOUT_FILENO, nwline, 8);
 
 		/* read data from the std input */
 		read = getline(&line, &line_size, stdin);
@@ -86,10 +91,11 @@ int main(void)
 
 			if (fileExists(tokens[0]))
 			{
-				_fnexecve(tokens);
+				_fnexecve(tokens, envp);
 			}
 			else
 			{
+				write(STDOUT_FILENO, argv[0], count_arg);
 				perror("");
 				return (1);
 			}
@@ -108,10 +114,10 @@ int main(void)
 
 /* call execve function */
 
-int _fnexecve(char **tokens)
+int _fnexecve(char **tokens, char **envp)
 {
 
-	if (execve(tokens[0], tokens, NULL) == -1)
+	if (execve(tokens[0], tokens, envp) == -1)
 	{
 		perror("Error execve");
 		return (1);
