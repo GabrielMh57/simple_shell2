@@ -46,6 +46,7 @@ char *findExecutable(char *command, char *path) {
         free(executable);
         dir = strtok(NULL, ":");
     }
-    return NULL; // Not found
+    /* if not found */
+    return NULL;
 }
 
