@@ -15,8 +15,10 @@
 int _fnexecve(char **, char **);
 
 /* check file */
-int fileExists(const char *filename) {
+int fileExists(const char *filename)
+{
 	struct stat buffer;
+
 	return (stat(filename, &buffer) == 0);
 }
 
@@ -96,7 +98,7 @@ int main(int argc, char *argv[], char *envp[])
 			else
 			{
 				write(STDOUT_FILENO, argv[0], count_arg);
-				perror("");
+				perror(" ");
 				return (1);
 			}
 		}
