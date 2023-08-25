@@ -57,13 +57,14 @@ int main(int argc, char *argv[], char *envp[])
 			write(STDOUT_FILENO, nwline, 8);
 
 		/* read data from the std input */
-		read = getline(&line, &line_size, stdin);
-		if (read == -1)
+		if ((read = getline(&line, &line_size, stdin)) == -1)
 		{
+
 			perror("Error in getline");
 			free(line);
-			return (1);
+
 		}
+
 
 		if (line[read - 1] == '\n')
 			line[read - 1] = '\0';
@@ -99,16 +100,16 @@ int main(int argc, char *argv[], char *envp[])
 			{
 				write(STDOUT_FILENO, argv[0], count_arg);
 				perror(" ");
-				return (1);
+				exit (1);
 			}
 		}
 
 		if (waitpid(child_pid, &status, 0) < 0 && errno != ECHILD)
 		{
 			perror("Error waiting for the child");
-			return (1);
 		}
 	}
+	
 
 	free(line);
 	return (0);
