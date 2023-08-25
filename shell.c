@@ -14,7 +14,14 @@
 
 int _fnexecve(char **, char **);
 
-/* check file */
+/**
+ * fileExists - check file stat
+ *
+ * Description : checking file
+ * @filename : file name
+ *
+ *Return: 0 (Success)  or  1
+ */
 int fileExists(const char *filename)
 {
 	struct stat buffer;
@@ -23,9 +30,14 @@ int fileExists(const char *filename)
 }
 
 /**
- * main : simple shell
+ * main - simple shell
  *
- * Return : Always 0
+ * Description : simple shell
+ * @argc : nmbr of arguments
+ * @argv : value of arguments
+ * @envp : enviroment variable
+ *
+ *Return: Always 0 (Success)
  */
 
 int main(int argc, char *argv[], char *envp[])
@@ -122,10 +134,20 @@ int main(int argc, char *argv[], char *envp[])
 	}
 
 	free(line);
+
+	/* return to end program if success*/
 	return (0);
 }
 
-/* call execve function */
+/**
+ * _fnexecve - call execve function
+ *
+ * Description : exec commands
+ * @tokens : command plus args
+ * @envp : enviroment variable
+ *
+ *Return: 0 upon success otherwise 1
+ */
 
 int _fnexecve(char **tokens, char **envp)
 {
