@@ -54,13 +54,15 @@ int main(int argc, char *argv[], char *envp[])
 	int token_count = 0;
 	char *token = NULL;
 	int count_arg = 0;
-	char *path = "/bin:/usr/bin";
+	char path[] = "/bin:/usr/bin";
+	char *executable = NULL;
 
 	while (argv[0][count_arg] != '\0')
 		count_arg++;
 
 	while (1 && !one_use)
 	{
+		token_count = 0;
 		if (argc > 3)
 			return (1);
 
@@ -81,7 +83,7 @@ int main(int argc, char *argv[], char *envp[])
 
 			perror("Error in getline");
 			free(line);
-			return (1);
+			exit(1);
 		}
 
 		if (read == 1 && line[0] == '\n')
@@ -109,14 +111,20 @@ int main(int argc, char *argv[], char *envp[])
 		/* check if file do not exists to check path*/
 		if (!fileExists(tokens[0]))
 		{
-			char *executable = findExecutable(tokens[0], path);
+			executable = findExecutable(tokens[0], path);
 			if (executable == NULL) {
 				write(STDOUT_FILENO, argv[0], count_arg);
 				perror(" ");
 				continue;
 			}
-		
+
 			tokens[0] = executable;
+			/*if (copyExecutable(tokens,executable) == 1)
+			{
+				perror("Memory alloc");
+				exit(1);
+			}
+			*/
 		}
 
 		/* creating a child process to execute the command */
@@ -146,6 +154,7 @@ int main(int argc, char *argv[], char *envp[])
 		{
 			perror("Error waiting for the child");
 		}
+
 	}
 
 	free(line);
