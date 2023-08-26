@@ -8,6 +8,7 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include "path.h"
+#include "compare.h"
 
 #define MAX_TOKENS 64
 
@@ -107,6 +108,10 @@ int main(int argc, char *argv[], char *envp[])
 
 
 		tokens[token_count] = NULL;
+
+		/* check if user typed exit */
+		if (compareExit(tokens) == true)
+			exit(0);
 
 		/* check if file do not exists to check path*/
 		if (!fileExists(tokens[0]))
