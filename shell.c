@@ -127,12 +127,7 @@ int main(int argc, char *argv[], char *envp[])
 			}
 
 			tokens[0] = executable;
-			/*if (copyExecutable(tokens,executable) == 1)
-			{
-				perror("Memory alloc");
-				exit(1);
-			}
-			*/
+
 		}
 
 		/* creating a child process to execute the command */
