@@ -112,9 +112,6 @@ int main(int argc, char *argv[], char *envp[])
 		/* check if user typed exit */
 		if (compareExit(tokens) == true)
 		{
-		/*	fflush(stdout);
-			fflush(stderr);
-			exit(0);*/
 			break;
 		}
 		
