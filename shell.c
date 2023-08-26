@@ -111,8 +111,9 @@ int main(int argc, char *argv[], char *envp[])
 
 		/* check if user typed exit */
 		if (compareExit(tokens) == true)
+		{
 			exit(0);
-
+		}
 		/* check if file do not exists to check path*/
 		if (!fileExists(tokens[0]))
 		{
