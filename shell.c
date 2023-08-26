@@ -116,6 +116,12 @@ int main(int argc, char *argv[], char *envp[])
 			fflush(stderr);
 			exit(0);
 		}
+		
+		if (isatty(STDIN_FILENO) == 0)
+		{
+ 			/* If input is not from terminal, exit*/
+			break;
+		}
 		/* check if file do not exists to check path*/
 		if (!fileExists(tokens[0]))
 		{
