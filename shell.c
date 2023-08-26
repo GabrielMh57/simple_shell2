@@ -55,7 +55,7 @@ int main(int argc, char *argv[], char *envp[])
 	int token_count = 0;
 	char *token = NULL;
 	int count_arg = 0;
-	char path[] = "/bin:/usr/bin";
+	char path[] = "/bin:/usr/bin:/usr/local/bin";
 	char *executable = NULL;
 
 	while (argv[0][count_arg] != '\0')
