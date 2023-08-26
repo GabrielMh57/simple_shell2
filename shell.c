@@ -112,16 +112,13 @@ int main(int argc, char *argv[], char *envp[])
 		/* check if user typed exit */
 		if (compareExit(tokens) == true)
 		{
-			fflush(stdout);
+		/*	fflush(stdout);
 			fflush(stderr);
-			exit(0);
-		}
-		
-		if (isatty(STDIN_FILENO) == 0)
-		{
- 			/* If input is not from terminal, exit*/
+			exit(0);*/
 			break;
 		}
+		
+
 		/* check if file do not exists to check path*/
 		if (!fileExists(tokens[0]))
 		{
